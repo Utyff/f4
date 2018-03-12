@@ -426,7 +426,7 @@ static void MX_FSMC_Init(void)
   /* ExtTiming */
   ExtTiming.AddressSetupTime = 15;
   ExtTiming.AddressHoldTime = 15;
-  ExtTiming.DataSetupTime = 255;
+  ExtTiming.DataSetupTime = 40;
   ExtTiming.BusTurnAroundDuration = 15;
   ExtTiming.CLKDivision = 16;
   ExtTiming.DataLatency = 17;
@@ -453,6 +453,9 @@ void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+  DBG_Trace((uint8_t*)"Error Handler.\nFile: ");
+  DBG_Trace((uint8_t*)file);
+
   while(1)
   {
   }

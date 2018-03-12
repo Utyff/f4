@@ -39,7 +39,7 @@ void mainInitialize() {
 
 char msg[] = "ab2 ";
 void mainCycle() {
-//    drawScreen();
+    drawScreen();
 //    KEYS_scan();
 
     if ((random() & 7) < 3) HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
