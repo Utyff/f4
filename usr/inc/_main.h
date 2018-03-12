@@ -35,13 +35,17 @@ extern DMA_HandleTypeDef hdma_memtomem_dma2_stream1;
 void mainInitialize();
 void mainCycle();
 
-void SWO_Send(uint8_t* buf);
-#define DEBUG_SWO
+#define DEBUG_TRACE_SWO
 
-#ifdef DEBUG_SWO
-#define DBG_Send(buf) SWO_Send(buf)
-#elif DEBUG_UART
-#define DBG_Send(buf) HAL_UART_Transmit(&huart1, buf, (uint16_t)strlen(buf), 0xFFFF)
+#if defined(DEBUG_TRACE_SWO)
+void SWO_Trace(uint8_t* msg);
+#define DBG_Trace(msg) SWO_Trace(msg)
+#elif defined(DEBUG_TRACE_UART)
+#define DBG_Trace(msg) HAL_UART_Transmit(&huart1, msg, (uint16_t)strlen(msg), 0xFFFF)
+#elif defined(DEBUG_TRACE_NONE)
+#define DBG_Trace(msg)
+#else
+#error Define DUBUG_TRACE destination
 #endif
 
 #endif //__MAIN_H

@@ -23,8 +23,8 @@ void FPUCheck();
 
 void mainInitialize() {
     DWT_Init();
-/*    LCD_Init();
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t *) samplesBuffer, BUF_SIZE);
+    LCD_Init();
+/*    HAL_ADC_Start_DMA(&hadc1, (uint32_t *) samplesBuffer, BUF_SIZE);
 
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
     GEN_setParams();
@@ -52,16 +52,18 @@ void mainCycle() {
 
 //    LCD_ShowxNum(0, 214, TIM8->CNT, 5, 12, 0x0);
 //    LCD_ShowxNum(30, 214, (u32) button1Count, 5, 12, 0x0);
-    DBG_Send((uint8_t*)msg);
+    DBG_Trace((uint8_t*)msg);
 
     delay_ms(50);
 }
 
-void SWO_Send(uint8_t *buf) {
-    for (int i = 0; buf[i] != 0; i++) {
-        ITM_SendChar(buf[i]);
+#ifdef DEBUG_TRACE_SWO
+void SWO_Trace(uint8_t *msg) {
+    for (int i = 0; msg[i] != 0; i++) {
+        ITM_SendChar(msg[i]);
     }
 }
+#endif
 
 void FPUCheck(void) {
     char buf[120];
@@ -74,7 +76,7 @@ void FPUCheck(void) {
             *(volatile uint32_t *) 0xE000EF40,   // MVFR0  0x10110021 vs 0x10110221
             *(volatile uint32_t *) 0xE000EF44,   // MVFR1  0x11000011 vs 0x12000011
             *(volatile uint32_t *) 0xE000EF48);  // MVFR2  0x00000040
-    DBG_Send((uint8_t *) buf);
+    DBG_Trace((uint8_t *) buf);
 
     mvfr0 = *(volatile uint32_t *) 0xE000EF40;
 
@@ -88,7 +90,7 @@ void FPUCheck(void) {
         default :
             sprintf(buf, "Unknown FPU");
     }
-    DBG_Send((uint8_t *) buf);
+    DBG_Trace((uint8_t *) buf);
 }
 
 void CORECheck(void)
@@ -98,7 +100,7 @@ void CORECheck(void)
     uint32_t var, pat;
 
     sprintf(buf, "CPUID %08X DEVID %03X\n", cpuid, DBGMCU->IDCODE & 0xFFF);
-    DBG_Send((uint8_t *) buf);
+    DBG_Trace((uint8_t *) buf);
 
     pat = (cpuid & 0x0000000F);
     var = (cpuid & 0x00F00000) >> 20;
@@ -130,5 +132,5 @@ void CORECheck(void)
         }
     } else
         puts("Unknown CORE IMPLEMENTER");
-    DBG_Send((uint8_t *) buf);
+    DBG_Trace((uint8_t *) buf);
 }

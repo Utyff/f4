@@ -4,7 +4,7 @@
 
 
 #define BYTE_IN_DOT 2
-#define SCREEN_DOTS (320*240)
+#define SCREEN_DOTS (320*24)
 #define SCREEN_BYTES (SCREEN_DOTS*BYTE_IN_DOT)
 
 
@@ -29,10 +29,10 @@ void copy2Screen_dma()
     LCD_WriteRAM_Prepare();      // start writing GRAM
 
     // copy first half of screen
-    HAL_DMA_Start(&hdma_memtomem_dma2_stream1, (uint32_t)screenBuffer, LCD->LCD_RAM, SCREEN_DOTS/2);
+/*    HAL_DMA_Start(&hdma_memtomem_dma2_stream1, (uint32_t)screenBuffer, LCD->LCD_RAM, SCREEN_DOTS/2);
     HAL_DMA_PollForTransfer(&hdma_memtomem_dma2_stream1, HAL_DMA_FULL_TRANSFER, 1000);
 
     // copy second half of screen
     HAL_DMA_Start(&hdma_memtomem_dma2_stream1, (uint32_t)(screenBuffer+SCREEN_DOTS/2), LCD->LCD_RAM, SCREEN_DOTS/2);
-    HAL_DMA_PollForTransfer(&hdma_memtomem_dma2_stream1, HAL_DMA_FULL_TRANSFER, 1000);
+    HAL_DMA_PollForTransfer(&hdma_memtomem_dma2_stream1, HAL_DMA_FULL_TRANSFER, 1000);//*/
 }

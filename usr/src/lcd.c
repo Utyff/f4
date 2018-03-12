@@ -577,9 +577,6 @@ void LCD_Init(void) {
 u32 LCDClearTick;
 
 void LCD_Clear(u16 color) {
-    clearScreen_dma(color);
-    return;
-
     // get start time
 //    u32 t0 = DWT_Get_Current_Tick();
 
