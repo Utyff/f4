@@ -21,6 +21,7 @@ uint32_t DWT_Elapsed_Tick(uint32_t t0) {
     return (uint32_t) ((((uint64_t) 0x100000000) + DWT->CYCCNT) - t0);
 }
 
+
 void DWT_Init() {
     if (!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {
         CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
@@ -33,29 +34,26 @@ void DWT_Init() {
 }
 
 
-void DWT_Delay_us(uint32_t us) // microseconds
-{
+void DWT_Delay_tics(uint32_t tics) { // DWT tics
+    uint32_t t0 = DWT_Get();
+    while (DWT_GetDelta(t0) < tics) {}
+}
+
+
+void DWT_Delay_us(uint32_t us) { // microseconds
     uint32_t t0 = DWT_Get();
     uint32_t delta = us * DWT_IN_MICROSEC;
 
     while (DWT_GetDelta(t0) < delta) {}
 }
 
-void DWT_Delay_tics(uint32_t tics) // microseconds
-{
-    uint32_t t0 = DWT_Get();
-    while (DWT_GetDelta(t0) < tics) {}
-}
 
-
-inline void DWT_Delay_ms(uint32_t ms)  // milliseconds
-{
+inline void DWT_Delay_ms(uint32_t ms) { // milliseconds
     DWT_Delay_us(ms * 1000);
 }
 
 
-void DWT_Delay_With_Action(uint32_t us, int (*cond)(), void (*act)()) // microseconds
-{
+void DWT_Delay_With_Action(uint32_t us, int (*cond)(), void (*act)()) { // microseconds
     uint32_t t0 = DWT_Get();
     uint32_t delta = us * DWT_IN_MICROSEC;
     static uint32_t trigger = 0;

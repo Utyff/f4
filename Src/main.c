@@ -122,8 +122,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
+#pragma clang diagnostic ignored "-Wunused-parameter"
 
   while (1)
   {
@@ -133,7 +133,6 @@ int main(void)
   /* USER CODE BEGIN 3 */
 
   }
-#pragma clang diagnostic pop
   /* USER CODE END 3 */
 
 }
