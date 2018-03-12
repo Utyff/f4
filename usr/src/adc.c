@@ -49,7 +49,7 @@ typedef struct ADC_param ADC_PARAM;
 }; //*/
 
 uint32_t ADC_Prescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
-//uint32_t ADC_SampleTime = ADC_SAMPLETIME_8CYCLES_5;
+uint32_t ADC_SampleTime = ADC_SAMPLETIME_3CYCLES;
 
 uint16_t ScreenTime = 0;      // index in ScreenTimes
 uint16_t ScreenTime_adj = 0;  // 0-9 shift in ScreenTime
@@ -89,7 +89,7 @@ void ADC_set_parameters() {
     */
     sConfig.Channel = ADC_CHANNEL_12;
 //    sConfig.Rank = ADC_REGULAR_RANK_1;
-//    sConfig.SamplingTime = ADC_SampleTime;
+    sConfig.SamplingTime = ADC_SampleTime;
     if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
         Error_Handler();
 

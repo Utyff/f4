@@ -24,23 +24,22 @@ void FPUCheck();
 void mainInitialize() {
     DWT_Init();
     LCD_Init();
-/*    HAL_ADC_Start_DMA(&hadc1, (uint32_t *) samplesBuffer, BUF_SIZE);
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t *) samplesBuffer, BUF_SIZE);
 
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-    GEN_setParams();
+    //GEN_setParams();
 
     HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1);
     KEYS_init();
-    initScreenBuf(); //*/
+    //initScreenBuf();
 
     CORECheck();
     FPUCheck();
 }
 
-char msg[] = "ab2 ";
 void mainCycle() {
     drawScreen();
-//    KEYS_scan();
+    KEYS_scan();
 
     if ((random() & 7) < 3) HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
 #ifdef LED2_Pin
@@ -50,9 +49,9 @@ void mainCycle() {
     if ((random() & 7) < 3) HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
 #endif
 
-//    LCD_ShowxNum(0, 214, TIM8->CNT, 5, 12, 0x0);
-//    LCD_ShowxNum(30, 214, (u32) button1Count, 5, 12, 0x0);
-    DBG_Trace((uint8_t*)msg);
+    LCD_ShowxNum(0, 214, TIM8->CNT, 5, 12, 0x0);
+    LCD_ShowxNum(30, 214, (u32) button1Count, 5, 12, 0x0);
+    //DBG_Trace((uint8_t*)"ab2 ");
 
     delay_ms(50);
 }

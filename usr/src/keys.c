@@ -5,7 +5,7 @@
 #define DEBOUNCING_CNT 0
 #define MAX_ENCODER    255 // max encoder value
 #define MID_ENCODER    (MAX_ENCODER/2+1)
-#define ENCODER_STEP   4   // counts per step
+#define ENCODER_STEP   2   // counts per step
 #define ENCODER_TIM    TIM8
 
 uint8_t button1Count = 0;
@@ -58,7 +58,8 @@ void KEYS_scan() {
     if (step == 0) return;
     char buf[64];
     sprintf(buf, "Encoder step: %i\n", (int)step);
-    HAL_UART_Transmit(&huart1,(uint8_t*)buf, (uint16_t)strlen(buf), 0xffff);
+    //HAL_UART_Transmit(&huart1,(uint8_t*)buf, (uint16_t)strlen(buf), 0xffff);
+    DBG_Trace((uint8_t*)buf);
 
     // choose type of encoder action
     int8_t action = button1Count % (int8_t) 3;

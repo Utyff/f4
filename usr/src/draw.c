@@ -24,5 +24,5 @@ void drawFrame() {
 
 void drawScreen() {
     drawFrame();
-   // drawGraph();
+    drawGraph();
 }
