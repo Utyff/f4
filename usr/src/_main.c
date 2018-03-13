@@ -8,7 +8,8 @@
 #include <fmc_dma.h>
 #include <generator.h>
 
-/* TIM1 Configuration
+/* F7
+ * TIM1 Configuration
  * CLK  216 mHz
  * PRE        21600 => 10 kHz
  * COUNT PER  10 000 => 1Hz
@@ -57,11 +58,13 @@ void mainCycle() {
 }
 
 #ifdef DEBUG_TRACE_SWO
+
 void SWO_Trace(uint8_t *msg) {
     for (int i = 0; msg[i] != 0; i++) {
         ITM_SendChar(msg[i]);
     }
 }
+
 #endif
 
 void FPUCheck(void) {
@@ -92,8 +95,7 @@ void FPUCheck(void) {
     DBG_Trace((uint8_t *) buf);
 }
 
-void CORECheck(void)
-{
+void CORECheck(void) {
     char buf[120];
     uint32_t cpuid = SCB->CPUID;
     uint32_t var, pat;

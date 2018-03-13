@@ -43,7 +43,7 @@ void KEYS_scan() {
         return;
     }
 
-    uint32_t st = (BTN1_GPIO_Port->IDR & BTN1_Pin) >> 13;
+    uint32_t st = (BTN1_GPIO_Port->IDR & BTN1_Pin);// >> 13;
     // if button1 change state
     if (st != (btns_state & BUTTON1)) {
         debounceCnt = DEBOUNCING_CNT;
@@ -57,8 +57,7 @@ void KEYS_scan() {
     int16_t step = ENC_Get();
     if (step == 0) return;
     char buf[64];
-    sprintf(buf, "Encoder step: %i\n", (int)step);
-    //HAL_UART_Transmit(&huart1,(uint8_t*)buf, (uint16_t)strlen(buf), 0xffff);
+    sprintf(buf, "Encoder step: %hi\n", step);
     DBG_Trace((uint8_t*)buf);
 
     // choose type of encoder action
