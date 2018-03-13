@@ -91,8 +91,21 @@ void ADC_set_parameters() {
     if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
         Error_Handler();
 
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t *) samplesBuffer, BUF_SIZE);
+
     ADCStartTick = DWT_Get_Current_Tick();
 }
+
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+    firstHalf = 0;
+}
+
+
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
+    firstHalf = 1;
+}
+
 
 void ADC_step_up() {
     if (ScreenTime_adj < 9)
@@ -123,7 +136,7 @@ float time;
 int ii;
 
 void ADC_step(int16_t step) {
-/*    if (step == 0) return;
+    if (step == 0) return;
     if (step > 0) ADC_step_up();
     else ADC_step_down();
     sStep = step;
@@ -144,7 +157,7 @@ void ADC_step(int16_t step) {
 
     // set X scale
     scaleX = ADC_Parameters[i].ScreenTime / time;
-//*/
+
     ADC_set_parameters();
 }
 

@@ -21,6 +21,9 @@ void CORECheck();
 
 void FPUCheck();
 
+extern int ii;
+extern float time;
+
 
 void mainInitialize() {
     DWT_Init();
@@ -52,6 +55,9 @@ void mainCycle() {
 
     LCD_ShowxNum(0, 214, TIM8->CNT, 5, 12, 0x0);
     LCD_ShowxNum(30, 214, (u32) button1Count, 5, 12, 0x0);
+    LCD_ShowxNum(60, 214, (u32) ii, 5, 12, 0x0);
+    LCD_ShowxNum(90, 214, (u32) time / 10, 5, 12, 0x0);
+    LCD_ShowxNum(120, 214, (u32) firstHalf, 5, 12, 0x0);
     //DBG_Trace((uint8_t*)"ab2 ");
 
     delay_ms(50);
