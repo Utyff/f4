@@ -442,10 +442,10 @@ static void MX_FSMC_Init(void)
   Timing.DataLatency = 17;
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
-  ExtTiming.AddressSetupTime = 35;
+  ExtTiming.AddressSetupTime = 3;
   ExtTiming.AddressHoldTime = 15;
-  ExtTiming.DataSetupTime = 10;
-  ExtTiming.BusTurnAroundDuration = 35;
+  ExtTiming.DataSetupTime = 12;
+  ExtTiming.BusTurnAroundDuration = 4;
   ExtTiming.CLKDivision = 16;
   ExtTiming.DataLatency = 17;
   ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
