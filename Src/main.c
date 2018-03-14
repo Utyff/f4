@@ -165,7 +165,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = 4;
   RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -444,7 +444,7 @@ static void MX_FSMC_Init(void)
   /* ExtTiming */
   ExtTiming.AddressSetupTime = 35;
   ExtTiming.AddressHoldTime = 15;
-  ExtTiming.DataSetupTime = 35;
+  ExtTiming.DataSetupTime = 10;
   ExtTiming.BusTurnAroundDuration = 35;
   ExtTiming.CLKDivision = 16;
   ExtTiming.DataLatency = 17;
