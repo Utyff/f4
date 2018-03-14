@@ -1,11 +1,66 @@
 #include <_main.h>
 #include "generator.h"
 
-uint32_t tim1Prescaler = 107;
+/* F4
+ * TIM1 Configuration
+ * CLK  168 mHz
+ * PRE           83 => 2 MHz
+ * COUNT PERIOD  99 => 20 KHz
+ */
+
+struct GEN_param {
+    uint32_t TIM_Prescaler;
+    uint32_t TIM_Period;
+    int Frequency;    // Hz
+};
+typedef struct GEN_param GEN_PARAM;
+
+#define GEN_Parameters_Size 6
+const GEN_PARAM GEN_Parameters[GEN_Parameters_Size] = {
+        {83, 19,  100000},
+        {83, 24,  80000},
+        {99, 27,  60000},
+        {83, 49,  40000},
+        {83, 99,  20000},
+        {83, 199, 10000}
+};
+
+int currentGenParam = 4;
+int currentGenScale = 1;
+
+uint32_t tim1Prescaler = 83;
 uint32_t tim1Period = 99;
 uint32_t tim1Pulse = 30;
 
 void GEN_step(int16_t step) {
+    if (step == 0) return;
+
+    if (step > 0) currentGenParam--;
+    else currentGenParam++;
+
+    // up Freq
+    if (currentGenParam < 0) {
+        currentGenParam += 5;
+        currentGenScale /= 10;
+        if (currentGenScale < 1) {
+            currentGenParam = 0;
+            currentGenScale = 0;
+        }
+    }
+
+    // down Freq
+    if (currentGenParam > 4) {
+        currentGenParam -= 5;
+        currentGenScale *= 10;
+        if (currentGenScale > 100) {
+            currentGenParam = 4;
+            currentGenScale = 100;
+        }
+    }
+
+    tim1Prescaler = GEN_Parameters[currentGenParam].TIM_Prescaler;
+    tim1Period = GEN_Parameters[currentGenParam].TIM_Period * currentGenScale;
+    tim1Pulse = tim1Period * 30 / 100;
     GEN_setParams();
 }
 
@@ -13,6 +68,10 @@ void GEN_setFreq() {
     GEN_setParams();
 }
 
+/**
+ *  made from MX_TIM1_Init()
+ *
+ */
 void GEN_setParams() {
     TIM_OC_InitTypeDef sConfigOC;
 
@@ -35,4 +94,6 @@ void GEN_setParams() {
     sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
     if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
         Error_Handler();
+
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }

@@ -107,6 +107,15 @@ void LCD_SetCursor(u16 Xpos, u16 Ypos) {
     }
 }
 
+void setAddr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+    LCD_WR_REG(lcddev.setxcmd); // Column addr set
+    LCD_WR_DATA(x0);   // XSTART
+    LCD_WR_DATA(x1);   // XEND
+    LCD_WR_REG(lcddev.setycmd); // Row addr set
+    LCD_WR_DATA(y0);   // YSTART
+    LCD_WR_DATA(y1);   // YEND
+}
+
 // Set up automatic scanning direction of the LCD
 // NOTE: Additional functions may be affected (especially in 9341/6804 these two wonderful) this function set,
 // So, generally set L2R_U2D can, if you set the scan mode to another may result in the display is not normal.

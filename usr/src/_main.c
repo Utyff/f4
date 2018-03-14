@@ -4,18 +4,9 @@
 #include <draw.h>
 #include <keys.h>
 #include <DataBuffer.h>
-#include <string.h>
-#include <fmc_dma.h>
 #include <generator.h>
+#include <adc.h>
 
-/* F7
- * TIM1 Configuration
- * CLK  216 mHz
- * PRE        21600 => 10 kHz
- * COUNT PER  10 000 => 1Hz
- * PRE        215 => 1000 kHz
- * COUNT PER  99 => 10 kHz
- */
 
 void CORECheck();
 
@@ -28,14 +19,15 @@ extern float time;
 void mainInitialize() {
     DWT_Init();
     LCD_Init();
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t *) samplesBuffer, BUF_SIZE);
 
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-    //GEN_setParams();
+    //HAL_ADC_Start_DMA(&hadc1, (uint32_t *) samplesBuffer, BUF_SIZE);
+    ADC_setParams();
+
+    //HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    GEN_setParams();
 
     HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1);
     KEYS_init();
-    //initScreenBuf();
 
     CORECheck();
     FPUCheck();
@@ -58,7 +50,6 @@ void mainCycle() {
     LCD_ShowxNum(60, 214, (u32) ii, 5, 12, 0x0);
     LCD_ShowxNum(90, 214, (u32) time / 10, 5, 12, 0x0);
     LCD_ShowxNum(120, 214, (u32) firstHalf, 5, 12, 0x0);
-    //DBG_Trace((uint8_t*)"ab2 ");
 
     delay_ms(50);
 }

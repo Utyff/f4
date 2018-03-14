@@ -13,8 +13,8 @@ struct ADC_param {
 };
 typedef struct ADC_param ADC_PARAM;
 
-#define ADC_Parameters_Size 31
-const ADC_PARAM ADC_Parameters[ADC_Parameters_Size] = {
+#define GEN_Parameters_Size 31
+const ADC_PARAM ADC_Parameters[GEN_Parameters_Size] = {
         {ADC_CLOCK_SYNC_PCLK_DIV2, ADC_SAMPLETIME_3CYCLES,   0.2619048f,  83.80952f},
         {ADC_CLOCK_SYNC_PCLK_DIV4, ADC_SAMPLETIME_3CYCLES,   0.5238095f,  167.61905f},
         {ADC_CLOCK_SYNC_PCLK_DIV2, ADC_SAMPLETIME_15CYCLES,  0.5476190f,  175.23810f},
@@ -46,7 +46,7 @@ const ADC_PARAM ADC_Parameters[ADC_Parameters_Size] = {
         {ADC_CLOCK_SYNC_PCLK_DIV4, ADC_SAMPLETIME_480CYCLES, 23.2380952f, 7436.19048f},
         {ADC_CLOCK_SYNC_PCLK_DIV6, ADC_SAMPLETIME_480CYCLES, 34.8571429f, 11154.28571f},
         {ADC_CLOCK_SYNC_PCLK_DIV8, ADC_SAMPLETIME_480CYCLES, 46.4761905f, 14872.380951f}
-}; //*/
+};
 
 uint32_t ADC_Prescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
 uint32_t ADC_SampleTime = ADC_SAMPLETIME_3CYCLES;
@@ -62,7 +62,7 @@ uint32_t ADCElapsedTick;       // the last time buffer fill
 /**
  * Copy of MX_ADC1_Init()
  */
-void ADC_set_parameters() {
+void ADC_setParams() {
 
     ADC_ChannelConfTypeDef sConfig;
 
@@ -147,7 +147,7 @@ void ADC_step(int16_t step) {
     int i = 1;
     while (ADC_Parameters[i].ScreenTime < time) {
         i++;
-        if (i >= ADC_Parameters_Size) break;
+        if (i >= GEN_Parameters_Size) break;
     }
 
     i--;
@@ -158,7 +158,7 @@ void ADC_step(int16_t step) {
     // set X scale
     scaleX = ADC_Parameters[i].ScreenTime / time;
 
-    ADC_set_parameters();
+    ADC_setParams();
 }
 
 /*uint16_t ICount = 0;
