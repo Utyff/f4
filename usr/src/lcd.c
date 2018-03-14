@@ -484,6 +484,12 @@ void LCD_Clear(u16 color) {
 //(sx,sy),(ex,ey): filled rectangle coordinates diagonal , area size:(ex-sx+1)*(ey-sy+1)
 //color: To fill color
 void LCD_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 color) {
+    u16 tmp;
+    if( sy>ey) {
+        tmp = sy;
+        sy = ey;
+        ey = tmp;
+    }
     u32 totalPoints = (ex - sx + (u16) 1) * (ey - sy + (u16) 1);
 
     LCD_Set_Window(sx, sy, ex, ey);          // set the cursor position
