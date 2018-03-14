@@ -332,11 +332,10 @@ void LCD_Set_Window(u16 sx, u16 sy, u16 ex, u16 ey) {
 // This initialization function can initialize the various ILI93XX LCD, but the other function is based ILI9320!!!
 // Not been tested on other types of driver chip!
 void LCD_Init(void) {
-    vu32 i = 0;
 
-    delay_ms(50); // delay 50 ms
+    delay_ms(50);
     LCD_WriteReg(0x0000, 0x0001);
-    delay_ms(50); // delay 50 ms
+    delay_ms(50);
     lcddev.id = LCD_ReadReg(0x0000);
     // read ID is not correct, the new lcddev.id==0X9300 judgment, because in 9341 has not been reset It will be read into the case of 9300
     if (lcddev.id < 0XFF || lcddev.id == 0XFFFF || lcddev.id == 0X9300) {
@@ -348,7 +347,6 @@ void LCD_Init(void) {
         lcddev.id <<= 8;
         lcddev.id |= LCD_RD_DATA();   // Read 41
         if (lcddev.id != 0X9341) {   // 9341 Non-try is not 6804
-            //return;
             _Error_Handler(__FILE__, __LINE__);
         }
     } else {
@@ -360,7 +358,6 @@ void LCD_Init(void) {
     {
         LCD_WR_REG(0xCF);
         LCD_WR_DATA(0x00);
-        i++;
         LCD_WR_DATA(0xC1);
         LCD_WR_DATA(0X30);
         LCD_WR_REG(0xED);
