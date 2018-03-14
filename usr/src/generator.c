@@ -33,6 +33,8 @@ uint32_t tim1Period = 99;
 uint32_t tim1Pulse = 30;
 
 void GEN_step(int16_t step) {
+    char msg[200];
+
     if (step == 0) return;
 
     if (step > 0) currentGenParam--;
@@ -44,7 +46,7 @@ void GEN_step(int16_t step) {
         currentGenScale /= 10;
         if (currentGenScale < 1) {
             currentGenParam = 0;
-            currentGenScale = 0;
+            currentGenScale = 1;
         }
     }
 
@@ -62,6 +64,9 @@ void GEN_step(int16_t step) {
     tim1Period = GEN_Parameters[currentGenParam].TIM_Period * currentGenScale;
     tim1Pulse = tim1Period * 30 / 100;
     GEN_setParams();
+
+    sprintf(msg, "After step. param: %u, scale: %u, presc: %u, period: %u\n", currentGenParam, currentGenScale, tim1Prescaler, tim1Period);
+    DBG_Trace((uint8_t *) msg);
 }
 
 void GEN_setFreq() {

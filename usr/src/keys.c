@@ -59,7 +59,7 @@ void KEYS_scan() {
     int16_t step = ENC_Get();
     if (step == 0) return;
     char buf[64];
-    sprintf(buf, "Encoder step: %hi\n", step);
+    sprintf(buf, "step: %hi\n", step);
     DBG_Trace((uint8_t*)buf);
 
     // choose type of encoder action
