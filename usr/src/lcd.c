@@ -2,66 +2,11 @@
 #include "lcd.h"
 #include "font.h"
 #include "delay.h"
-//////////////////////////////////////////////////////////////////////////////////
 
-//2.4 Inch /2.8 inch/3.5 inch/4.3 inch TFT LCD driver
-// Support driver IC models include:ILI9341/ILI9325/RM68042/RM68021/ILI9320/ILI9328/LGDP4531/LGDP4535/
-//                  SPFD5408/1505/B505/C505/NT35310/NT35510 etc.
-// STM32F4 Project - library function version
-// Taobao shop: http://mcudev.taobao.com
-//********************************************************************************
-//V1.2 Modify the description
-// Support SPFD5408 drive, in addition to the liquid crystal ID printed directly into HEX format for easy viewing LCD driver IC.
-//V1.3
-// Added support for fast IO
-// Modify the backlight control polarity (for V1.8 and later development board version)
-// For the previous version 1.8 (not including 1.8) LCD modules, please modify LCD_Init function LCD_LED=1; is LCD_LED=1;
-//V1.4
-// Modified LCD_ShowChar function, use the function draw point Videos characters.
-// Adds support for horizontal and vertical screen display
-//V1.5 20110730
-//1, modify the B505 read color LCD incorrect bug.
-//2, modify the fast IO and horizontal and vertical screen set up.
-//V1.6 20111116
-//1, adding the liquid crystal driver support for LGDP4535
-//V1.7 20120713
-//1, increase LCD_RD_DATA function
-//2, adding support for the ILI9341
-//3, the increase in independent driver code ILI9325
-//4, increase LCD_Scan_Dir function (use caution)
-//6, in addition to modify some of the original function, to accommodate the 9341 operation
-//V1.8 20120905
-//1, added LCD important parameter settings structural body lcddev
-//2, Add LCD_Display_Dir function, switch the screen anyway support online
-//V1.9 20120911
-//1, the new RM68042 drive (ID: 6804), but the 6804 does not support cross-screen display! . Reason: change the scanning mode,
-// 6804 led to the failure to set the coordinates, tried many methods will not work, temporarily no solution.
-//V2.0 20120924
-// Without hardware reset, ILI9341 ID reader will be misread as 9300, modify LCD_Init, will not be recognized
-// The situation (read ID 9300 / illegal ID), force the designated driver IC is ILI9341, perform the initialization 9341.
-//V2.1 20120930
-// Read color correction ILI9325 bug.
-//V2.2 20121007
-// Correction LCD_Scan_Dir the bug.
-//V2.3 20130120
-// Add 6804 to support cross-screen display
-//V2.4 20131120
-//1, the new NT35310 (ID: 5310) drive support
-//2, the new LCD_Set_Window function is used to set the window for fast filling, more useful, but the function when the horizontal screen, 6804 is not supported.
-//V2.5 20140211
-//1, the new NT 35510 (ID: 5510) drive support
-//V2.6 20140504
-//1, the new 24 * Support ASCII 24 fonts (more fonts the user can add their own)
-//2, modify some function parameters, to support MDK -O2 optimization
-//3, for 9341/35310/35510, writing time is set to the fastest possible speed
-//4, SSD1289 support was removed, because 1289 is too slow, the read cycle to 1us ... simply wonderful. F4 is not suitable for use
-//5, bug correction such as IC 68042 and C505 color reading function.
-//V2.7 20140710
-//1. Fix LCD_Color_Fill function of a bug.
-//2, a bug fix LCD_Scan_Dir function.
-//V2.8 20140721
-//1, when MDK solve using -O2 optimization LCD_ReadPoint function reads point failure.
-//////////////////////////////////////////////////////////////////////////////////
+/**
+ *2.4 Inch /2.8 inch/3.5 inch/4.3 inch TFT LCD driver
+ * Support driver IC models include:ILI9341
+ */
 
 // LCD brush color and background color
 u16 POINT_COLOR = 0x0000; // Drawing pen color
@@ -88,15 +33,6 @@ void LCD_SetCursor(u16 Xpos, u16 Ypos) {
         LCD_WriteReg(lcddev.setxcmd, Xpos);
         LCD_WriteReg(lcddev.setycmd, Ypos);
     }
-}
-
-void setAddr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
-    LCD_WR_REG(lcddev.setxcmd); // Column addr set
-    LCD_WR_DATA(x0);   // XSTART
-    LCD_WR_DATA(x1);   // XEND
-    LCD_WR_REG(lcddev.setycmd); // Row addr set
-    LCD_WR_DATA(y0);   // YSTART
-    LCD_WR_DATA(y1);   // YEND
 }
 
 // Set up automatic scanning direction of the LCD
@@ -452,13 +388,11 @@ void LCD_Init(void) {
         _Error_Handler(__FILE__, __LINE__);
     }
     LCD_Display_Dir(1);  // default to portrait
-//	LCD_LED=1;           // lit backlight
     LCD_Clear(GREEN);
 }
 
 // Clear screen function
 //color: To clear the screen fill color
-u32 LCDClearTick;
 
 void LCD_Clear(u16 color) {
     // get start time
@@ -474,8 +408,7 @@ void LCD_Clear(u16 color) {
         //delay_dwt(1);
     }
 
-    // count time for one circle
-    LCDClearTick = DWT_Elapsed_Tick(t0);
+    u32 LCDClearTick = DWT_Elapsed_Tick(t0);
     POINT_COLOR = YELLOW;
     LCD_ShowxNum(100, 227, LCDClearTick / 168, 8, 12, 9);
 }
