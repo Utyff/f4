@@ -74,7 +74,7 @@ void drawGraph() {
     buildGraph1ch();
     uint32_t t0 = DWT_Get_Current_Tick();
 
-    POINT_COLOR = CYAN;
+    POINT_COLOR = BLUE;
     prev = graph[0];
     for (u16 i = 1; i < MAX_X; i++) {
         LCD_DrawLine(i - (u16) 1, prev, i, graph[i]);

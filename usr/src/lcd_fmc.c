@@ -5,6 +5,7 @@
 
 // Write register function
 //regval: register value
+/*
 void LCD_WR_REG(vu16 regval) {
     regval = regval;        // Use -O2 optimization, you must insert delay
     LCD->LCD_REG = regval;  // write to write register number
@@ -18,7 +19,7 @@ void LCD_WR_DATA(vu16 data) {
     LCD->LCD_RAM = data;
 //    delay_us(1);
 }
-
+//*/
 // Read LCD data
 // Return Value: Value read
 u16 LCD_RD_DATA(void) {

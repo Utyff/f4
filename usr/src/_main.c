@@ -45,6 +45,7 @@ void mainCycle() {
     if ((random() & 7) < 3) HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
 #endif
 
+    POINT_COLOR = WHITE;
     LCD_ShowxNum(0, 214, TIM8->CNT, 5, 12, 0x0);
     LCD_ShowxNum(30, 214, (u32) button1Count, 5, 12, 0x0);
     LCD_ShowxNum(60, 214, (u32) ii, 5, 12, 0x0);

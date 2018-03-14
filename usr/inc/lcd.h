@@ -134,7 +134,7 @@ void LCD_Draw_Circle(u16 x0, u16 y0, u8 r);                                     
 void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2);                            // Draw lines
 void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2);                        // Draw the rectangle
 void LCD_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 color);                        // fill the monochrome
-void LCD_Color_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 *color);                // fill in the specified color
+void LCD_Color_Fill(u16 sx, u16 sy, u16 ex, u16 ey, const u16 *color);                // fill in the specified color
 void LCD_ShowChar(u16 x, u16 y, u8 num, u8 size, u8 mode);                        // display a character
 void LCD_ShowNum(u16 x, u16 y, u32 num, u8 len, u8 size);                        // display a number
 void LCD_ShowxNum(u16 x, u16 y, u32 num, u8 len, u8 size, u8 mode);                // display numbers
@@ -143,7 +143,7 @@ LCD_ShowString(u16 x, u16 y, u16 width, u16 height, u8 size, const char *p, u8 m
 
 void LCD_Scan_Dir(u8 dir);                            // Set the screen scan direction
 void LCD_Display_Dir(u8 dir);                        // set the screen display direction
-void LCD_Set_Window(u16 sx, u16 sy, u16 width, u16 height);// Set the window
+void LCD_Set_Window(u16 sx, u16 sy, u16 ex, u16 ey);// Set the window
 
 #ifdef __cplusplus
 }

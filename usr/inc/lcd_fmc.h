@@ -2,6 +2,7 @@
 #define _LCD_FMC_H
 
 #include "_main.h"
+#include "dwt.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 //----------------- LCD port definition ----------------
@@ -24,12 +25,23 @@ typedef struct
 #define LCD             ((LCD_TypeDef *) LCD_BASE)
 //////////////////////////////////////////////////////////////////////////////////
 
-void LCD_WR_REG(vu16 regval);
+//__INLINE void LCD_WR_REG(vu16 regval);
 u16 LCD_RD_DATA(void);
-void LCD_WR_DATA(vu16 data);
+//__INLINE void LCD_WR_DATA(vu16 data);
 void LCD_WriteReg(u16 LCD_Reg, u16 LCD_RegValue);
 u16 LCD_ReadReg(u16 LCD_Reg);
 void LCD_WriteRAM_Prepare(void);
 void LCD_WriteRAM(u16 RGB_Code);
+
+__STATIC_INLINE void LCD_WR_REG(vu16 regval) {
+    LCD->LCD_REG = regval;
+//    DWT_Delay_tics(1);
+}
+
+__STATIC_INLINE void LCD_WR_DATA(vu16 data) {
+    LCD->LCD_RAM = data;
+//    DWT_Delay_tics(1);
+}
+
 
 #endif //_LCD_FMC_H
