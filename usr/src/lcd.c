@@ -4,35 +4,44 @@
 #include "delay.h"
 
 /**
- *2.4 Inch /2.8 inch/3.5 inch/4.3 inch TFT LCD driver
- * Support driver IC models include:ILI9341
+ * 2.4 Inch /2.8 inch/3.5 inch/4.3 inch TFT LCD driver
+ * Support driver IC models: ILI9341
  */
 
-// LCD brush color and background color
 u16 POINT_COLOR = 0x0000; // Drawing pen color
 u16 BACK_COLOR = 0xFFFF;  // background color
 
 // Management LCD important parameters
-// Default to portrait
 _lcd_dev lcddev;
 
 // Set the cursor position
 //Xpos: abscissa
 //Ypos: ordinate
 void LCD_SetCursor(u16 Xpos, u16 Ypos) {
-    if (lcddev.id == 0X9341) {
-        LCD_WR_REG(lcddev.setxcmd);
-        LCD_WR_DATA(Xpos >> 8);
-        LCD_WR_DATA(Xpos & (u16) 0XFF);
-        LCD_WR_REG(lcddev.setycmd);
-        LCD_WR_DATA(Ypos >> 8);
-        LCD_WR_DATA(Ypos & (u16) 0XFF);
-    } else {
-        if (lcddev.dir == 1)
-            Xpos = lcddev.width - (u16) 1 - Xpos;// horizontal screen is actually turned the x, y coordinates
-        LCD_WriteReg(lcddev.setxcmd, Xpos);
-        LCD_WriteReg(lcddev.setycmd, Ypos);
-    }
+    LCD_WR_REG(LCD_SET_X);
+    LCD_WR_DATA(Xpos >> 8);
+    LCD_WR_DATA(Xpos & (u16) 0XFF);
+    LCD_WR_REG(LCD_SET_Y);
+    LCD_WR_DATA(Ypos >> 8);
+    LCD_WR_DATA(Ypos & (u16) 0XFF);
+}
+
+// Set the window, and automatically sets the upper left corner of the window to draw point coordinates (sx,sy).
+//sx,sy: window start coordinate (upper left corner)
+//width,height: width and height of the window, must be greater than 0!!
+// Form size:width*height.
+void LCD_Set_Window(u16 sx, u16 sy, u16 ex, u16 ey) {
+    LCD_WR_REG(LCD_SET_X);
+    LCD_WR_DATA(sx >> 8);
+    LCD_WR_DATA(sx & (u16) 0XFF);
+    LCD_WR_DATA(ex >> 8);
+    LCD_WR_DATA(ex & (u16) 0XFF);
+
+    LCD_WR_REG(LCD_SET_Y);
+    LCD_WR_DATA(sy >> 8);
+    LCD_WR_DATA(sy & (u16) 0XFF);
+    LCD_WR_DATA(ey >> 8);
+    LCD_WR_DATA(ey & (u16) 0XFF);
 }
 
 // Set up automatic scanning direction of the LCD
@@ -42,166 +51,75 @@ void LCD_SetCursor(u16 Xpos, u16 Ypos) {
 //9320/9325/9328/4531/4535/1505/b505/8989/5408/9341/5310/5510 etc. IC has actually tested
 void LCD_Scan_Dir(u8 dir) {
     u16 regval = 0;
-    u16 dirreg = 0;
     u16 temp;
     u16 xsize, ysize;
-    if (lcddev.dir == 1 && lcddev.id != 0X6804)// horizontal screen, without changing the scanning direction of 6804!
-    {
-        switch (dir)// direction change
-        {
-            case 0:
-                dir = 6;
-                break;
-            case 1:
-                dir = 7;
-                break;
-            case 2:
-                dir = 4;
-                break;
-            case 3:
-                dir = 5;
-                break;
-            case 4:
-                dir = 1;
-                break;
-            case 5:
-                dir = 0;
-                break;
-            case 6:
-                dir = 3;
-                break;
-            case 7:
-                dir = 2;
-                break;
-        }
+
+    switch (dir) {
+        case L2R_U2D:// from left to right, top to bottom
+            regval |= (0 << 7) | (0 << 6) | (0 << 5);
+            break;
+        case L2R_D2U:// from left to right, from bottom to top
+            regval |= (1 << 7) | (0 << 6) | (0 << 5);
+            break;
+        case R2L_U2D:// from right to left, top to bottom
+            regval |= (0 << 7) | (1 << 6) | (0 << 5);
+            break;
+        case R2L_D2U:// from right to left, from bottom to top
+            regval |= (1 << 7) | (1 << 6) | (0 << 5);
+            break;
+        case U2D_L2R:// top to bottom, left to right
+            regval |= (0 << 7) | (0 << 6) | (1 << 5);
+            break;
+        case U2D_R2L:// top to bottom, right to left
+            regval |= (0 << 7) | (1 << 6) | (1 << 5);
+            break;
+        case D2U_L2R:// from bottom to top, from left to right
+            regval |= (1 << 7) | (0 << 6) | (1 << 5);
+            break;
+        case D2U_R2L:// from bottom to top, right to left
+            regval |= (1 << 7) | (1 << 6) | (1 << 5);
+            break;
     }
-    if (lcddev.id == 0x9341 || lcddev.id == 0X6804 || lcddev.id == 0X5310 ||
-        lcddev.id == 0X5510)//9341/6804/5310/5510, very special
-    {
-        switch (dir) {
-            case L2R_U2D:// from left to right, top to bottom
-                regval |= (0 << 7) | (0 << 6) | (0 << 5);
-                break;
-            case L2R_D2U:// from left to right, from bottom to top
-                regval |= (1 << 7) | (0 << 6) | (0 << 5);
-                break;
-            case R2L_U2D:// from right to left, top to bottom
-                regval |= (0 << 7) | (1 << 6) | (0 << 5);
-                break;
-            case R2L_D2U:// from right to left, from bottom to top
-                regval |= (1 << 7) | (1 << 6) | (0 << 5);
-                break;
-            case U2D_L2R:// top to bottom, left to right
-                regval |= (0 << 7) | (0 << 6) | (1 << 5);
-                break;
-            case U2D_R2L:// top to bottom, right to left
-                regval |= (0 << 7) | (1 << 6) | (1 << 5);
-                break;
-            case D2U_L2R:// from bottom to top, from left to right
-                regval |= (1 << 7) | (0 << 6) | (1 << 5);
-                break;
-            case D2U_R2L:// from bottom to top, right to left
-                regval |= (1 << 7) | (1 << 6) | (1 << 5);
-                break;
-        }
-        if (lcddev.id == 0X5510)dirreg = 0X3600;
-        else dirreg = 0X36;
-        if ((lcddev.id != 0X5310) && (lcddev.id != 0X5510))regval |= 0X08;//5310/5510 do not need to BGR
-        if (lcddev.id == 0X6804)regval |= 0x02;// 6804 of the 9341's and anti BIT6
-        LCD_WriteReg(dirreg, regval);
-        if ((regval & 0X20) || lcddev.dir == 1) {
-            if (lcddev.width < lcddev.height)// swap X,Y
-            {
-                temp = lcddev.width;
-                lcddev.width = lcddev.height;
-                lcddev.height = temp;
-            }
-        } else {
-            if (lcddev.width > lcddev.height)// swap X,Y
-            {
-                temp = lcddev.width;
-                lcddev.width = lcddev.height;
-                lcddev.height = temp;
-            }
-        }
 
-        xsize = lcddev.width;
-        ysize = lcddev.height;
+    // dirreg = 0X36;
+    LCD_WriteReg(0X36, regval);
 
-        if (lcddev.id == 0X5510) {
-            LCD_WR_REG(lcddev.setxcmd);
-            LCD_WR_DATA(0);
-            LCD_WR_REG(lcddev.setxcmd + (u16) 1);
-            LCD_WR_DATA(0);
-            LCD_WR_REG(lcddev.setxcmd + (u16) 2);
-            LCD_WR_DATA((xsize - (u16) 1) >> 8);
-            LCD_WR_REG(lcddev.setxcmd + (u16) 3);
-            LCD_WR_DATA((xsize - (u16) 1) & (u16) 0XFF);
-            LCD_WR_REG(lcddev.setycmd);
-            LCD_WR_DATA(0);
-            LCD_WR_REG(lcddev.setycmd + (u16) 1);
-            LCD_WR_DATA(0);
-            LCD_WR_REG(lcddev.setycmd + (u16) 2);
-            LCD_WR_DATA((ysize - (u16) 1) >> 8);
-            LCD_WR_REG(lcddev.setycmd + (u16) 3);
-            LCD_WR_DATA((ysize - (u16) 1) & (u16) 0XFF);
-        } else {
-            LCD_WR_REG(lcddev.setxcmd);
-            LCD_WR_DATA(0);
-            LCD_WR_DATA(0);
-            LCD_WR_DATA((xsize - (u16) 1) >> 8);
-            LCD_WR_DATA((xsize - (u16) 1) & (u16) 0XFF);
-            LCD_WR_REG(lcddev.setycmd);
-            LCD_WR_DATA(0);
-            LCD_WR_DATA(0);
-            LCD_WR_DATA((ysize - (u16) 1) >> 8);
-            LCD_WR_DATA((ysize - (u16) 1) & (u16) 0XFF);
+    if ((regval & 0X20) || lcddev.dir == 1) {
+        if (lcddev.width < lcddev.height)// swap X,Y
+        {
+            temp = lcddev.width;
+            lcddev.width = lcddev.height;
+            lcddev.height = temp;
         }
     } else {
-        switch (dir) {
-            case L2R_U2D:// from left to right, top to bottom
-                regval |= (1 << 5) | (1 << 4) | (0 << 3);
-                break;
-            case L2R_D2U:// from left to right, from bottom to top
-                regval |= (0 << 5) | (1 << 4) | (0 << 3);
-                break;
-            case R2L_U2D:// from right to left, top to bottom
-                regval |= (1 << 5) | (0 << 4) | (0 << 3);
-                break;
-            case R2L_D2U:// from right to left, from bottom to top
-                regval |= (0 << 5) | (0 << 4) | (0 << 3);
-                break;
-            case U2D_L2R:// top to bottom, left to right
-                regval |= (1 << 5) | (1 << 4) | (1 << 3);
-                break;
-            case U2D_R2L:// top to bottom, right to left
-                regval |= (1 << 5) | (0 << 4) | (1 << 3);
-                break;
-            case D2U_L2R:// from bottom to top, from left to right
-                regval |= (0 << 5) | (1 << 4) | (1 << 3);
-                break;
-            case D2U_R2L:// from bottom to top, right to left
-                regval |= (0 << 5) | (0 << 4) | (1 << 3);
-                break;
-        }
-        if (lcddev.id == 0x8989)//8989 IC
+        if (lcddev.width > lcddev.height)// swap X,Y
         {
-            dirreg = 0X11;
-            regval |= 0X6040;    //65K
-        } else// other driver IC
-        {
-            dirreg = 0X03;
-            regval |= 1 << 12;
+            temp = lcddev.width;
+            lcddev.width = lcddev.height;
+            lcddev.height = temp;
         }
-        LCD_WriteReg(dirreg, regval);
     }
+
+    xsize = lcddev.width;
+    ysize = lcddev.height;
+
+    LCD_WR_REG(LCD_SET_X);
+    LCD_WR_DATA(0);
+    LCD_WR_DATA(0);
+    LCD_WR_DATA((xsize - (u16) 1) >> 8);
+    LCD_WR_DATA((xsize - (u16) 1) & (u16) 0XFF);
+    LCD_WR_REG(LCD_SET_Y);
+    LCD_WR_DATA(0);
+    LCD_WR_DATA(0);
+    LCD_WR_DATA((ysize - (u16) 1) >> 8);
+    LCD_WR_DATA((ysize - (u16) 1) & (u16) 0XFF);
 }
 
 // Draw points
 //x,y: coordinates
 //POINT_COLOR: the color of this point
 void LCD_DrawPoint(u16 x, u16 y) {
-    LCD_SetCursor(x, y);        // Set the cursor position
+    LCD_SetCursor(x, y);       // Set the cursor position
     LCD_WriteRAM_Prepare();    // Start writing GRAM
     LCD->LCD_RAM = POINT_COLOR;
 }
@@ -210,19 +128,14 @@ void LCD_DrawPoint(u16 x, u16 y) {
 //x,y: coordinates
 //color: color
 void LCD_Fast_DrawPoint(u16 x, u16 y, u16 color) {
-    if (lcddev.id == 0X9341) {
-        LCD_WR_REG(lcddev.setxcmd);
-        LCD_WR_DATA(x >> 8);
-        LCD_WR_DATA(x & (u16) 0XFF);
-        LCD_WR_REG(lcddev.setycmd);
-        LCD_WR_DATA(y >> 8);
-        LCD_WR_DATA(y & (u16) 0XFF);
-    } else {
-        if (lcddev.dir == 1)x = lcddev.width - (u16) 1 - x;// horizontal screen is actually turned the x, y coordinates
-        LCD_WriteReg(lcddev.setxcmd, x);
-        LCD_WriteReg(lcddev.setycmd, y);
-    }
-    LCD->LCD_REG = lcddev.wramcmd;
+    LCD_WR_REG(LCD_SET_X);
+    LCD_WR_DATA(x >> 8);
+    LCD_WR_DATA(x & (u16) 0XFF);
+    LCD_WR_REG(LCD_SET_Y);
+    LCD_WR_DATA(y >> 8);
+    LCD_WR_DATA(y & (u16) 0XFF);
+
+    LCD->LCD_REG = LCD_WR_RAM_CMD;
     LCD->LCD_RAM = color;
 }
 
@@ -239,29 +152,8 @@ void LCD_Display_Dir(u8 dir) {
         lcddev.width = 320;
         lcddev.height = 240;
     }
-    lcddev.setxcmd = 0X2A;
-    lcddev.setycmd = 0X2B;
-    lcddev.wramcmd = 0X2C;
 
     LCD_Scan_Dir(DFT_SCAN_DIR);    // Default scan direction
-}
-
-// Set the window, and automatically sets the upper left corner of the window to draw point coordinates (sx,sy).
-//sx,sy: window start coordinate (upper left corner)
-//width,height: width and height of the window, must be greater than 0!!
-// Form size:width*height.
-void LCD_Set_Window(u16 sx, u16 sy, u16 ex, u16 ey) {
-    LCD_WR_REG(lcddev.setxcmd);
-    LCD_WR_DATA(sx >> 8);
-    LCD_WR_DATA(sx & (u16) 0XFF);
-    LCD_WR_DATA(ex >> 8);
-    LCD_WR_DATA(ex & (u16) 0XFF);
-
-    LCD_WR_REG(lcddev.setycmd);
-    LCD_WR_DATA(sy >> 8);
-    LCD_WR_DATA(sy & (u16) 0XFF);
-    LCD_WR_DATA(ey >> 8);
-    LCD_WR_DATA(ey & (u16) 0XFF);
 }
 
 // Initialize lcd
@@ -282,111 +174,107 @@ void LCD_Init(void) {
         lcddev.id = LCD_RD_DATA();    // Read 93
         lcddev.id <<= 8;
         lcddev.id |= LCD_RD_DATA();   // Read 41
-        if (lcddev.id != 0X9341) {   // 9341 Non-try is not 6804
-            _Error_Handler(__FILE__, __LINE__);
+        if (lcddev.id != 0X9341) {   // 9341
+            Error_Handler();
         }
     } else {
-        _Error_Handler(__FILE__, __LINE__);
+        Error_Handler();
     }
-
 //	printf(" LCD ID:%x\r\n",lcddev.id); // print LCD ID
-    if (lcddev.id == 0X9341)    // 9341 initialize
-    {
-        LCD_WR_REG(0xCF);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0xC1);
-        LCD_WR_DATA(0X30);
-        LCD_WR_REG(0xED);
-        LCD_WR_DATA(0x64);
-        LCD_WR_DATA(0x03);
-        LCD_WR_DATA(0X12);
-        LCD_WR_DATA(0X81);
-        LCD_WR_REG(0xE8);
-        LCD_WR_DATA(0x85);
-        LCD_WR_DATA(0x10);
-        LCD_WR_DATA(0x7A);
-        LCD_WR_REG(0xCB);
-        LCD_WR_DATA(0x39);
-        LCD_WR_DATA(0x2C);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x34);
-        LCD_WR_DATA(0x02);
-        LCD_WR_REG(0xF7);
-        LCD_WR_DATA(0x20);
-        LCD_WR_REG(0xEA);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x00);
-        LCD_WR_REG(0xC0);    //Power control
-        LCD_WR_DATA(0x1B);   //VRH[5:0]
-        LCD_WR_REG(0xC1);    //Power control
-        LCD_WR_DATA(0x01);   //SAP[2:0];BT[3:0]
-        LCD_WR_REG(0xC5);    //VCM control
-        LCD_WR_DATA(0x30);     //3F
-        LCD_WR_DATA(0x30);     //3C
-        LCD_WR_REG(0xC7);    //VCM control2
-        LCD_WR_DATA(0XB7);
-        LCD_WR_REG(0x36);    // Memory Access Control
-        LCD_WR_DATA(0x48);
-        LCD_WR_REG(0x3A);
-        LCD_WR_DATA(0x55);
-        LCD_WR_REG(0xB1);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x1A);
-        LCD_WR_REG(0xB6);    // Display Function Control
-        LCD_WR_DATA(0x0A);
-        LCD_WR_DATA(0xA2);
-        LCD_WR_REG(0xF2);    // 3Gamma Function Disable
-        LCD_WR_DATA(0x00);
-        LCD_WR_REG(0x26);    //Gamma curve selected
-        LCD_WR_DATA(0x01);
-        LCD_WR_REG(0xE0);    //Set Gamma
-        LCD_WR_DATA(0x0F);
-        LCD_WR_DATA(0x2A);
-        LCD_WR_DATA(0x28);
-        LCD_WR_DATA(0x08);
-        LCD_WR_DATA(0x0E);
-        LCD_WR_DATA(0x08);
-        LCD_WR_DATA(0x54);
-        LCD_WR_DATA(0XA9);
-        LCD_WR_DATA(0x43);
-        LCD_WR_DATA(0x0A);
-        LCD_WR_DATA(0x0F);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x00);
-        LCD_WR_REG(0XE1);    //Set Gamma
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x15);
-        LCD_WR_DATA(0x17);
-        LCD_WR_DATA(0x07);
-        LCD_WR_DATA(0x11);
-        LCD_WR_DATA(0x06);
-        LCD_WR_DATA(0x2B);
-        LCD_WR_DATA(0x56);
-        LCD_WR_DATA(0x3C);
-        LCD_WR_DATA(0x05);
-        LCD_WR_DATA(0x10);
-        LCD_WR_DATA(0x0F);
-        LCD_WR_DATA(0x3F);
-        LCD_WR_DATA(0x3F);
-        LCD_WR_DATA(0x0F);
-        LCD_WR_REG(0x2B);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x01);
-        LCD_WR_DATA(0x3f);
-        LCD_WR_REG(0x2A);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0x00);
-        LCD_WR_DATA(0xef);
-        LCD_WR_REG(0x11); //Exit Sleep
-        delay_ms(120);
-        LCD_WR_REG(0x29); //display on
-    } else {
-        _Error_Handler(__FILE__, __LINE__);
-    }
+
+    LCD_WR_REG(0xCF);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0xC1);
+    LCD_WR_DATA(0X30);
+    LCD_WR_REG(0xED);
+    LCD_WR_DATA(0x64);
+    LCD_WR_DATA(0x03);
+    LCD_WR_DATA(0X12);
+    LCD_WR_DATA(0X81);
+    LCD_WR_REG(0xE8);
+    LCD_WR_DATA(0x85);
+    LCD_WR_DATA(0x10);
+    LCD_WR_DATA(0x7A);
+    LCD_WR_REG(0xCB);
+    LCD_WR_DATA(0x39);
+    LCD_WR_DATA(0x2C);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x34);
+    LCD_WR_DATA(0x02);
+    LCD_WR_REG(0xF7);
+    LCD_WR_DATA(0x20);
+    LCD_WR_REG(0xEA);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_REG(0xC0);    //Power control
+    LCD_WR_DATA(0x1B);   //VRH[5:0]
+    LCD_WR_REG(0xC1);    //Power control
+    LCD_WR_DATA(0x01);   //SAP[2:0];BT[3:0]
+    LCD_WR_REG(0xC5);    //VCM control
+    LCD_WR_DATA(0x30);     //3F
+    LCD_WR_DATA(0x30);     //3C
+    LCD_WR_REG(0xC7);    //VCM control2
+    LCD_WR_DATA(0XB7);
+    LCD_WR_REG(0x36);    // Memory Access Control
+    LCD_WR_DATA(0x48);
+    LCD_WR_REG(0x3A);
+    LCD_WR_DATA(0x55);
+    LCD_WR_REG(0xB1);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x1A);
+    LCD_WR_REG(0xB6);    // Display Function Control
+    LCD_WR_DATA(0x0A);
+    LCD_WR_DATA(0xA2);
+    LCD_WR_REG(0xF2);    // 3Gamma Function Disable
+    LCD_WR_DATA(0x00);
+    LCD_WR_REG(0x26);    //Gamma curve selected
+    LCD_WR_DATA(0x01);
+    LCD_WR_REG(0xE0);    //Set Gamma
+    LCD_WR_DATA(0x0F);
+    LCD_WR_DATA(0x2A);
+    LCD_WR_DATA(0x28);
+    LCD_WR_DATA(0x08);
+    LCD_WR_DATA(0x0E);
+    LCD_WR_DATA(0x08);
+    LCD_WR_DATA(0x54);
+    LCD_WR_DATA(0XA9);
+    LCD_WR_DATA(0x43);
+    LCD_WR_DATA(0x0A);
+    LCD_WR_DATA(0x0F);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_REG(0XE1);    //Set Gamma
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x15);
+    LCD_WR_DATA(0x17);
+    LCD_WR_DATA(0x07);
+    LCD_WR_DATA(0x11);
+    LCD_WR_DATA(0x06);
+    LCD_WR_DATA(0x2B);
+    LCD_WR_DATA(0x56);
+    LCD_WR_DATA(0x3C);
+    LCD_WR_DATA(0x05);
+    LCD_WR_DATA(0x10);
+    LCD_WR_DATA(0x0F);
+    LCD_WR_DATA(0x3F);
+    LCD_WR_DATA(0x3F);
+    LCD_WR_DATA(0x0F);
+    LCD_WR_REG(0x2B);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x01);
+    LCD_WR_DATA(0x3f);
+    LCD_WR_REG(0x2A);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0xef);
+    LCD_WR_REG(0x11); //Exit Sleep
+    delay_ms(120);
+    LCD_WR_REG(0x29); //display on
+
     LCD_Display_Dir(1);  // default to portrait
     LCD_Clear(GREEN);
 }
@@ -405,7 +293,6 @@ void LCD_Clear(u16 color) {
 
     for (u32 i = 0; i < totalPoints; i++) {
         LCD->LCD_RAM = color;
-        //delay_dwt(1);
     }
 
     u32 LCDClearTick = DWT_Elapsed_Tick(t0);
@@ -435,19 +322,16 @@ void LCD_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 color) {
 // In the designated area to fill the specified color block
 //(sx,sy),(ex,ey): filled rectangle coordinates diagonal, area size:(ex-sx+1)*(ey-sy+1)
 //color: To fill color
-void LCD_Color_Fill(u16 sx, u16 sy, u16 ex, u16 ey, const u16 *color) {
+void LCD_drawBMP(u16 sx, u16 sy, u16 ex, u16 ey, const u16 *bmp) {
     u16 height, width;
     u16 i, j;
     width = ex - sx + (u16) 1;            // get filled width
     height = ey - sy + (u16) 1;           // height
     for (i = 0; i < height; i++) {
         LCD_SetCursor(sx, sy + i);  // set the cursor position
-        DWT_Delay_tics(55);
         LCD_WriteRAM_Prepare();     // start writing GRAM
-        DWT_Delay_tics(55);
         for (j = 0; j < width; j++) { // write data
-            LCD->LCD_RAM = color[i * width + j];
-            DWT_Delay_tics(5);
+            LCD->LCD_RAM = bmp[i * width + j];
         }
     }
 }
@@ -563,11 +447,11 @@ void LCD_ShowChar(u16 x, u16 y, u8 num, u8 size, u8 mode) {
     }
 }
 
-//m^n function
+// m^n function
 // Return value:m^n-th power.
 u32 LCD_Pow(u8 m, u8 n) {
     u32 result = 1;
-    while (n--)result *= m;
+    while (n--) result *= m;
     return result;
 }
 
