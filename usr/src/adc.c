@@ -13,8 +13,8 @@ struct ADC_param {
 };
 typedef struct ADC_param ADC_PARAM;
 
-#define GEN_Parameters_Size 31
-const ADC_PARAM ADC_Parameters[GEN_Parameters_Size] = {
+#define ADC_Parameters_Size 31
+const ADC_PARAM ADC_Parameters[ADC_Parameters_Size] = {
         {ADC_CLOCK_SYNC_PCLK_DIV2, ADC_SAMPLETIME_3CYCLES,   0.2619048f,  83.80952f},
         {ADC_CLOCK_SYNC_PCLK_DIV4, ADC_SAMPLETIME_3CYCLES,   0.5238095f,  167.61905f},
         {ADC_CLOCK_SYNC_PCLK_DIV2, ADC_SAMPLETIME_15CYCLES,  0.5476190f,  175.23810f},
@@ -147,7 +147,7 @@ void ADC_step(int16_t step) {
     int i = 1;
     while (ADC_Parameters[i].ScreenTime < time) {
         i++;
-        if (i >= GEN_Parameters_Size) break;
+        if (i >= ADC_Parameters_Size) break;
     }
 
     i--;
