@@ -1,8 +1,7 @@
 #include "dwt.h"
 
 
-#define DWT_Get() DWT->CYCCNT
-
+int SMALL_DELLAY;
 
 uint32_t DWT_GetDelta(uint32_t t0) {
     return DWT->CYCCNT - t0;
@@ -31,12 +30,6 @@ void DWT_Init() {
         DWT->CYCCNT = 0;
         DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
     }
-}
-
-
-void DWT_Delay_tics(uint32_t tics) { // DWT tics
-    uint32_t t0 = DWT_Get();
-    while (DWT_GetDelta(t0) < tics) {}
 }
 
 

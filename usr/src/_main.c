@@ -76,7 +76,7 @@ void FPUCheck(void) {
             *(volatile uint32_t *) 0xE000EF40,   // MVFR0  0x10110021 vs 0x10110221
             *(volatile uint32_t *) 0xE000EF44,   // MVFR1  0x11000011 vs 0x12000011
             *(volatile uint32_t *) 0xE000EF48);  // MVFR2  0x00000040
-    DBG_Trace((uint8_t *) buf);
+    DBG_Trace(buf);
 
     mvfr0 = *(volatile uint32_t *) 0xE000EF40;
 
@@ -90,7 +90,7 @@ void FPUCheck(void) {
         default :
             sprintf(buf, "Unknown FPU");
     }
-    DBG_Trace((uint8_t *) buf);
+    DBG_Trace(buf);
 }
 
 void CORECheck(void) {
@@ -99,7 +99,7 @@ void CORECheck(void) {
     uint32_t var, pat;
 
     sprintf(buf, "CPUID %08X DEVID %03X\n", cpuid, DBGMCU->IDCODE & 0xFFF);
-    DBG_Trace((uint8_t *) buf);
+    DBG_Trace(buf);
 
     pat = (cpuid & 0x0000000F);
     var = (cpuid & 0x00F00000) >> 20;
@@ -131,5 +131,5 @@ void CORECheck(void) {
         }
     } else
         puts("Unknown CORE IMPLEMENTER");
-    DBG_Trace((uint8_t *) buf);
+    DBG_Trace(buf);
 }

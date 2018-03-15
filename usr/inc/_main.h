@@ -42,13 +42,13 @@ void mainCycle();
 #if defined(DEBUG_TRACE_SWO)
 
 void SWO_Trace(uint8_t* msg);
-#define DBG_Trace(msg) SWO_Trace(msg)
+#define DBG_Trace(msg) SWO_Trace((uint8_t*)(msg))
 
 #elif defined(DEBUG_TRACE_UART)
 
 #include "string.h"
 
-#define DBG_Trace(msg) HAL_UART_Transmit(&huart1, msg, (uint16_t)strlen(msg), 0xFFFF)
+#define DBG_Trace(msg) HAL_UART_Transmit(&huart1, (uint8_t*)(msg), (uint16_t)strlen((char*)(msg)), 0xFFFF)
 
 #elif defined(DEBUG_TRACE_NONE)
 
