@@ -151,6 +151,9 @@ void LCD_Scan_Dir(u8 dir) {
 //x,y: coordinates
 //POINT_COLOR: the color of this point
 void LCD_DrawPoint(u16 x, u16 y) {
+    if (x >= MAX_X || y >= MAX_Y)
+        return;
+
     LCD_SetCursor(x, y);       // Set the cursor position
     LCD_WriteRAM_Prepare();    // Start writing GRAM
     LCD_WR_DATA(POINT_COLOR);
@@ -160,6 +163,9 @@ void LCD_DrawPoint(u16 x, u16 y) {
 //x,y: coordinates
 //color: color
 void LCD_Fast_DrawPoint(u16 x, u16 y, u16 color) {
+    if (x >= MAX_X || y >= MAX_Y)
+        return;
+
     LCD_WR_REG(LCD_SET_X);
     LCD_WR_DATA(x >> 8);
     LCD_WR_DATA(x & (u16) 0XFF);
@@ -212,6 +218,10 @@ void LCD_Init(void) {
     } else {
         Error_Handler();
     }
+
+    char buf[250];
+    sprintf(buf, "\n LCD ID: %x\n", lcddev.id);
+    DBG_Trace((uint8_t*)buf);
 
     LCD_WR_REG(0xCF);
     LCD_WR_DATA(0x00);
@@ -336,7 +346,7 @@ void LCD_Clear(u16 color) {
 //color: To fill color
 void LCD_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 color) {
     u16 tmp;
-    if( sy>ey) {
+    if (sy > ey) {
         tmp = sy;
         sy = ey;
         ey = tmp;

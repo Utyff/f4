@@ -11,6 +11,9 @@
 // begin to write the GRAM command
 #define LCD_WR_RAM_CMD 0x2c
 
+#define MAX_X 320
+#define MAX_Y 240
+
 // LCD important parameter set
 typedef struct {
     u16 width;            //LCD width
