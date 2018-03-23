@@ -223,54 +223,54 @@ void LCD_Init(void) {
     sprintf(buf, "\n LCD ID: %x\n", lcddev.id);
     DBG_Trace((uint8_t*)buf);
 
-    LCD_WR_REG(0xCF);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0xC1);
-    LCD_WR_DATA(0X30);
-    LCD_WR_REG(0xED);
+    LCD_WR_REG(0xCF);   //   Power control
+    LCD_WR_DATA(0x00);  // dummy
+    LCD_WR_DATA(0xC1);  // PCEQ enable, VCOM driving ability enhancement enable
+    LCD_WR_DATA(0X30);  // Discharge path enable
+    LCD_WR_REG(0xED);   //   Power on sequence control
     LCD_WR_DATA(0x64);
     LCD_WR_DATA(0x03);
     LCD_WR_DATA(0X12);
     LCD_WR_DATA(0X81);
-    LCD_WR_REG(0xE8);
+    LCD_WR_REG(0xE8);   //   Driver timing control A
     LCD_WR_DATA(0x85);
     LCD_WR_DATA(0x10);
     LCD_WR_DATA(0x7A);
-    LCD_WR_REG(0xCB);
+    LCD_WR_REG(0xCB);   //   Power control A
     LCD_WR_DATA(0x39);
     LCD_WR_DATA(0x2C);
     LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x34);
-    LCD_WR_DATA(0x02);
-    LCD_WR_REG(0xF7);
-    LCD_WR_DATA(0x20);
-    LCD_WR_REG(0xEA);
+    LCD_WR_DATA(0x34);  // vcore control - 1.6v
+    LCD_WR_DATA(0x02);  // ddvdh control - 5.6v
+    LCD_WR_REG(0xF7);   //   Pump ratio control
+    LCD_WR_DATA(0x20);  // DDVDH=2xVCI
+    LCD_WR_REG(0xEA);   //   Driver timing control B
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x00);
-    LCD_WR_REG(0xC0);    //Power control
-    LCD_WR_DATA(0x1B);   //VRH[5:0]
-    LCD_WR_REG(0xC1);    //Power control
-    LCD_WR_DATA(0x01);   //SAP[2:0];BT[3:0]
-    LCD_WR_REG(0xC5);    //VCM control
-    LCD_WR_DATA(0x30);     //3F
-    LCD_WR_DATA(0x30);     //3C
-    LCD_WR_REG(0xC7);    //VCM control2
+    LCD_WR_REG(0xC0);   //   Power Control 1
+    LCD_WR_DATA(0x1B);  // 4.2v VRH[5:0]
+    LCD_WR_REG(0xC1);   //   Power Control 2
+    LCD_WR_DATA(0x01);  // BT[2:0] Sets the factor used in the step-up circuits.
+    LCD_WR_REG(0xC5);   //   VCOM Control 1
+    LCD_WR_DATA(0x30);  // 3F
+    LCD_WR_DATA(0x30);  // 3C
+    LCD_WR_REG(0xC7);   //   VCOM Control 2
     LCD_WR_DATA(0XB7);
-    LCD_WR_REG(0x36);    // Memory Access Control
+    LCD_WR_REG(0x36);   //   Memory Access Control
     LCD_WR_DATA(0x48);
     LCD_WR_REG(0x3A);
     LCD_WR_DATA(0x55);
     LCD_WR_REG(0xB1);
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x1A);
-    LCD_WR_REG(0xB6);    // Display Function Control
+    LCD_WR_REG(0xB6);   //   Display Function Control
     LCD_WR_DATA(0x0A);
     LCD_WR_DATA(0xA2);
-    LCD_WR_REG(0xF2);    // 3Gamma Function Disable
+    LCD_WR_REG(0xF2);   //   3Gamma Function Disable
     LCD_WR_DATA(0x00);
-    LCD_WR_REG(0x26);    //Gamma curve selected
+    LCD_WR_REG(0x26);   //   Gamma curve selected
     LCD_WR_DATA(0x01);
-    LCD_WR_REG(0xE0);    //Set Gamma
+    LCD_WR_REG(0xE0);   //   Set Gamma
     LCD_WR_DATA(0x0F);
     LCD_WR_DATA(0x2A);
     LCD_WR_DATA(0x28);
@@ -286,7 +286,7 @@ void LCD_Init(void) {
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x00);
-    LCD_WR_REG(0XE1);    //Set Gamma
+    LCD_WR_REG(0XE1);   //   Set Gamma
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x15);
     LCD_WR_DATA(0x17);
@@ -302,21 +302,21 @@ void LCD_Init(void) {
     LCD_WR_DATA(0x3F);
     LCD_WR_DATA(0x3F);
     LCD_WR_DATA(0x0F);
-    LCD_WR_REG(0x2B);
+    LCD_WR_REG(0x2B);   //   Set Y window
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x01);
     LCD_WR_DATA(0x3f);
-    LCD_WR_REG(0x2A);
+    LCD_WR_REG(0x2A);   //   Set X window
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0x00);
     LCD_WR_DATA(0xef);
-    LCD_WR_REG(0x11); //Exit Sleep
-    delay_ms(120);
-    LCD_WR_REG(0x29); //display on
+    LCD_WR_REG(0x11);   //   Exit Sleep
+    delay_ms(5);        // 120 ?
+    LCD_WR_REG(0x29);   //   display on
 
-    LCD_Display_Dir(1);  // default to portrait
+    LCD_Display_Dir(1); // default to portrait
     LCD_Clear(GREEN);
 }
 
