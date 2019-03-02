@@ -1,4 +1,5 @@
 #include <_main.h>
+#include <stdio.h>
 #include "generator.h"
 
 /* F4

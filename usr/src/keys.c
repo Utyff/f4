@@ -1,7 +1,7 @@
 #include <_main.h>
 #include <keys.h>
 #include <adc.h>
-#include <string.h>
+#include <stdio.h>
 #include <generator.h>
 
 #define DEBOUNCING_CNT 0

@@ -1,4 +1,5 @@
 #include <fmc_dma.h>
+#include <stdio.h>
 #include "lcd.h"
 #include "font.h"
 #include "delay.h"
