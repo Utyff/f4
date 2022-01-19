@@ -17,7 +17,6 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -122,6 +121,7 @@ int main(void)
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 #pragma clang diagnostic ignored "-Wunused-parameter"
 
+#pragma ide diagnostic ignored "EndlessLoop"
   while (1)
   {
     mainCycle();
@@ -142,11 +142,12 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /** Configure the main internal regulator output voltage 
+  /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -160,7 +161,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -173,7 +174,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Enables the Clock Security System 
+  /** Enables the Clock Security System
   */
   HAL_RCC_EnableCSS();
 }
@@ -195,7 +196,7 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 1 */
 
   /* USER CODE END ADC1_Init 1 */
-  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
@@ -213,7 +214,7 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
   sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = 1;
@@ -386,11 +387,12 @@ static void MX_USART1_UART_Init(void)
 
 }
 
-/** 
+/**
   * Enable DMA controller clock
   */
-static void MX_DMA_Init(void) 
+static void MX_DMA_Init(void)
 {
+
   /* DMA controller clock enable */
   __HAL_RCC_DMA2_CLK_ENABLE();
 
@@ -439,8 +441,17 @@ static void MX_GPIO_Init(void)
 /* FSMC initialization function */
 static void MX_FSMC_Init(void)
 {
-  FSMC_NORSRAM_TimingTypeDef Timing;
-  FSMC_NORSRAM_TimingTypeDef ExtTiming;
+
+  /* USER CODE BEGIN FSMC_Init 0 */
+
+  /* USER CODE END FSMC_Init 0 */
+
+  FSMC_NORSRAM_TimingTypeDef Timing = {0};
+  FSMC_NORSRAM_TimingTypeDef ExtTiming = {0};
+
+  /* USER CODE BEGIN FSMC_Init 1 */
+
+  /* USER CODE END FSMC_Init 1 */
 
   /** Perform the SRAM1 memory initialization sequence
   */
@@ -483,6 +494,9 @@ static void MX_FSMC_Init(void)
     Error_Handler( );
   }
 
+  /* USER CODE BEGIN FSMC_Init 2 */
+
+  /* USER CODE END FSMC_Init 2 */
 }
 
 /* USER CODE BEGIN 4 */
@@ -516,7 +530,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
@@ -524,4 +538,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
