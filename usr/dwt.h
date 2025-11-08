@@ -1,7 +1,7 @@
 #ifndef __DWT_H
 #define __DWT_H
 
-#include "_main.h"
+#include "main.h"
 
 #ifdef __cplusplus
 extern "C" {
