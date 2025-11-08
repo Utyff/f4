@@ -40,7 +40,7 @@ void mainInitialize();
 
 void mainCycle();
 
-#define DEBUG_TRACE_SWO
+#define DEBUG_TRACE_NONE
 
 #if defined(DEBUG_TRACE_SWO)
 
