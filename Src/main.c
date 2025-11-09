@@ -21,8 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <_main.h>
 #include <stdio.h>
+#include <_main.h>
+#include <lcd.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -120,9 +121,25 @@ int main(void)
 #pragma clang diagnostic ignored "-Wunused-parameter"
 
 #pragma ide diagnostic ignored "EndlessLoop"
+  u16 color = 1;
+
   while (1)
   {
-    mainCycle();
+      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+      HAL_Delay(300);
+
+      u32 t0 = DWT_Get_Current_Tick();
+      LCD_Clear(color);
+      u32 ticks = DWT_Elapsed_Tick(t0);
+      POINT_COLOR = YELLOW;
+      LCD_ShowxNum(130, 227, ticks / DWT_IN_MICROSEC, 8, 12, 9);
+
+      color = color << 1;
+      if (color == 0) {
+          color = 1;
+      }
+      POINT_COLOR = BLACK;
+      LCD_ShowxNum(0, 214, color, 10, 12, 0x0);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -455,7 +472,6 @@ static void MX_FSMC_Init(void)
   /* USER CODE END FSMC_Init 0 */
 
   FSMC_NORSRAM_TimingTypeDef Timing = {0};
-  FSMC_NORSRAM_TimingTypeDef ExtTiming = {0};
 
   /* USER CODE BEGIN FSMC_Init 1 */
 
@@ -476,28 +492,21 @@ static void MX_FSMC_Init(void)
   hsram1.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
   hsram1.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
   hsram1.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
-  hsram1.Init.ExtendedMode = FSMC_EXTENDED_MODE_ENABLE;
+  hsram1.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
   hsram1.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
   hsram1.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
   hsram1.Init.PageSize = FSMC_PAGE_SIZE_NONE;
   /* Timing */
-  Timing.AddressSetupTime = 5;
+  Timing.AddressSetupTime = 2;
   Timing.AddressHoldTime = 15;
-  Timing.DataSetupTime = 5;
-  Timing.BusTurnAroundDuration = 5;
+  Timing.DataSetupTime = 2;
+  Timing.BusTurnAroundDuration = 1;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
-  ExtTiming.AddressSetupTime = 3;
-  ExtTiming.AddressHoldTime = 15;
-  ExtTiming.DataSetupTime = 12;
-  ExtTiming.BusTurnAroundDuration = 4;
-  ExtTiming.CLKDivision = 16;
-  ExtTiming.DataLatency = 17;
-  ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
 
-  if (HAL_SRAM_Init(&hsram1, &Timing, &ExtTiming) != HAL_OK)
+  if (HAL_SRAM_Init(&hsram1, &Timing, NULL) != HAL_OK)
   {
     Error_Handler( );
   }
