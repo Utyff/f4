@@ -198,7 +198,7 @@ void LCD_Display_Dir(u8 dir) {
 // Initialize lcd
 // This initialization function can initialize the various ILI93XX LCD, but the other function is based ILI9320!!!
 // Not been tested on other types of driver chip!
-void LCD_Init(void) {
+void __attribute__((optimize("O0"))) LCD_Init(void) {
 
     delay_ms(50);
     LCD_WriteReg(0x0000, 0x0001);
@@ -324,9 +324,9 @@ void LCD_Init(void) {
 // Clear screen function
 //color: To clear the screen fill color
 
-void LCD_Clear(u16 color) {
+void __attribute__((optimize("Og"))) LCD_Clear(u16 color) {
     // get start time
-    u32 t0 = DWT_Get_Current_Tick();
+//    u32 t0 = DWT_Get_Current_Tick();
 
     u32 totalPoints = lcddev.width * lcddev.height;  // get the total number of points
 
@@ -337,9 +337,9 @@ void LCD_Clear(u16 color) {
         LCD_WR_DATA(color);
     }
 
-    u32 LCDClearTick = DWT_Elapsed_Tick(t0);
-    POINT_COLOR = YELLOW;
-    LCD_ShowxNum(100, 227, LCDClearTick / 168, 8, 12, 9);
+//    u32 LCDClearTick = DWT_Elapsed_Tick(t0);
+//    POINT_COLOR = YELLOW;
+//    LCD_ShowxNum(100, 227, LCDClearTick / 168, 8, 12, 9);
 }
 
 // Fill a single color in the designated area
